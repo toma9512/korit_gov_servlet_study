@@ -23,7 +23,7 @@ public class FirstServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         System.out.println("init 메소드 호출, 초기화");
-        config.getServletContext().setAttribute("awge", 27);
+        config.getServletContext().setAttribute("age", 27);
     }
     // servletContext : 전체에서 사용하는 전역 변수
 

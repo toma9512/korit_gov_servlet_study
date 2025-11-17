@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @WebServlet("/ch07/users")
@@ -26,17 +25,26 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding(StandardCharsets.UTF_8.name());
-
         SignupReqDto signupReqDto = gson.fromJson(req.getReader(), SignupReqDto.class);
 
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resp.setContentType("application/json");
+
+        if (userService.isNull(signupReqDto)) {
+            ResponseDto<User> responseDto = ResponseDto.<User>builder()
+                    .message("빈 값이 있을 수 없습니다.")
+                    .status(200)
+                    .body(null)
+                    .build();
+
+            String json = gson.toJson(responseDto);
+            resp.getWriter().write(json);
+            return;
+        }
 
         if (userService.isDuplicatedUsername(signupReqDto.getUsername())) {
             ResponseDto<User> responseDto = ResponseDto.<User>builder()
                     .message("username이 중복되었습니다.")
-                    .status(400)
+                    .status(200)
                     .body(null)
                     .build();
             String json = gson.toJson(responseDto);
@@ -44,7 +52,7 @@ public class UserServlet extends HttpServlet {
             resp.getWriter().write(json);
             return;
         }
-        User user = userService.addUser(signupReqDto.toEntity());
+        User user = userService.addUser(signupReqDto);
 
         ResponseDto<User> responseDto = ResponseDto.<User>builder()
                 .status(200)
@@ -58,11 +66,8 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding(StandardCharsets.UTF_8.name());
-
         String username = req.getParameter("username");
                 resp.setContentType("application/json");
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         if (username == null) {
             ResponseDto<List<User>> responseDto = ResponseDto.<List<User>>builder()

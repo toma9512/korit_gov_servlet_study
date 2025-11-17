@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseDto<User> {
+public class ResponseDto<T> {
     private Integer status;
     private String message;
-    private User body;
+    private T body;
 }

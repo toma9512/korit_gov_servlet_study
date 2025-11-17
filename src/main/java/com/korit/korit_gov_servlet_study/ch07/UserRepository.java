@@ -6,7 +6,7 @@ import java.util.List;
 public class UserRepository {
     private static UserRepository instance;
     List<User> users;
-    private Integer userId = 1;
+    private Long userId = 1L;
 
     private UserRepository() {
         users = new ArrayList<>();

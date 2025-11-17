@@ -9,12 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @WebServlet("/ch06/boards")
 public class BoardServlet extends HttpServlet {
     private BoardRepository boardRepository;
-    Gson gson;
+    private Gson gson;
 
     @Override
     public void init() throws ServletException {
@@ -24,28 +24,32 @@ public class BoardServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resp.setContentType("application/json");
 
-        String json = gson.toJson(boardRepository.getBoards());
+        SuccessResponse<List<Board>> successResponse = SuccessResponse.<List<Board>>builder()
+                .message("[ 전체 조회 ]")
+                .body(boardRepository.getBoards())
+                .build();
+
+        String json = gson.toJson(successResponse);
 
         resp.getWriter().write(json);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        Board board = gson.fromJson(req.getReader(), Board.class);
+        BoardReqDto boardReqDto = gson.fromJson(req.getReader(), BoardReqDto.class);
 
-        boardRepository.addBoard(board);
+        Board board = boardRepository.addBoard(boardReqDto.toEntity());
 
-        Response response = new Response();
-        response.setMessage("게시글 작성 완료");
+        SuccessResponse<Board> successResponse = SuccessResponse.<Board>builder()
+                .message("게시글 작성 완료")
+                .body(board)
+                .build();
 
-        String json = gson.toJson(response);
+        String json = gson.toJson(successResponse);
 
         resp.setContentType("application/json");
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         resp.getWriter().write(json);
     }

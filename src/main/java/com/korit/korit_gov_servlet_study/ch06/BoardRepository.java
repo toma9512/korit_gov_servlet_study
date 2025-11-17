@@ -6,9 +6,11 @@ import java.util.List;
 public class BoardRepository {
     private static BoardRepository instance;
     private List<Board> boards;
+    private Long boardId;
 
     private BoardRepository() {
         boards = new ArrayList<>();
+        boardId = 1L;
     }
 
     public static BoardRepository getInstance() {
@@ -18,8 +20,10 @@ public class BoardRepository {
         return instance;
     }
 
-    public void addBoard(Board board) {
+    public Board addBoard(Board board) {
+        board.setBoardId(boardId++);
         boards.add(board);
+        return board;
     }
 
     public List<Board> getBoards() {

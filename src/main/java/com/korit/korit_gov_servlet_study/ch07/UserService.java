@@ -27,8 +27,8 @@ public class UserService {
         return userRepository.findUserByUsername(username) != null;
     }
 
-    public User addUser(User user) {
-        return userRepository.addUser(user);
+    public User addUser(SignupReqDto signupReqDto) {
+        return userRepository.addUser(signupReqDto.toEntity());
     }
 
     public List<User> getUsers() {
